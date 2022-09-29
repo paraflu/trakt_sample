@@ -6,7 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:trakt_dart/trakt_dart.dart';
 import 'package:trakt_sample/page/auth.dart';
 import 'package:trakt_sample/page/home.dart';
-import 'package:trakt_sample/page/traktdeeplink.dart';
+import 'package:trakt_sample/page/trakt_complete_registration.dart';
+import 'package:trakt_sample/route.dart';
 import 'package:trakt_sample/secret.dart';
 
 void main() async {
@@ -14,6 +15,7 @@ void main() async {
   final secret = await SecretLoader(secretPath: "secrets.json").load();
   runApp(TraktDartApp(secret: secret));
 }
+
 
 // ignore: must_be_immutable
 class TraktDartApp extends StatelessWidget {
@@ -30,40 +32,9 @@ class TraktDartApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final router = buildRouter(traktManager);
     return MaterialApp.router(
-      routerConfig: GoRouter(
-        routes: <GoRoute>[
-          GoRoute(
-            path: '/',
-            builder: (BuildContext context, GoRouterState state) {
-              return HomePage(traktManager: traktManager);
-            },
-          ),
-          GoRoute(
-            name: 'auth',
-            path: '/auth-required/:code',
-            builder: (BuildContext context, GoRouterState state) {
-              if (kDebugMode) {
-                print(state.params['code']!);
-              }
-              return AuthPage(
-                code: state.params["code"]!,
-                url: state.queryParams["url"]!,
-              );
-            },
-          ),
-          GoRoute(
-            name: 'oauth',
-            path: '/trakt/oauth',
-            builder: (BuildContext context, GoRouterState state) {
-              if (kDebugMode) {
-                print(jsonEncode(state));
-              }
-              return const TraktDeepLinkPage();
-            },
-          ),
-        ],
-      ),
+      routerConfig: router,
       title: 'Welcome to Flutter',
     );
   }

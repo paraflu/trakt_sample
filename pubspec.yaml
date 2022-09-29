@@ -34,6 +34,9 @@ dependencies:
   trakt_dart:
     path: ../trakt_dart_cust
   go_router: ^5.0.3
+  logger: ^1.1.0
+  url_launcher: ^6.1.6
+  flutter_secure_storage: ^6.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
