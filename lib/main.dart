@@ -1,6 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trakt_dart/trakt_dart.dart';
+import 'package:trakt_sample/page/auth.dart';
+import 'package:trakt_sample/page/home.dart';
+import 'package:trakt_sample/page/traktdeeplink.dart';
 import 'package:trakt_sample/secret.dart';
 
 void main() async {
@@ -20,43 +26,45 @@ class TraktDartApp extends StatelessWidget {
         clientId: secret.clientId,
         clientSecret: secret.clientSecret,
         redirectURI: "");
-
-    traktManager.authentication.generateDeviceCodes(signup: true).then((value) {
-      if (kDebugMode) {
-        print(value);
-      }
-    });
-  }
-
-  Future<List<TrendingMovie>> getTrendingMovies() {
-    return traktManager.movies.getTrendingMovies();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Welcome to Flutter',
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Trending Movies'),
-        ),
-        body: FutureBuilder<List<TrendingMovie>>(
-          future: getTrendingMovies(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return const CircularProgressIndicator();
-            }
-            final trendingMovies = snapshot.data!;
-            return ListView.builder(
-              itemCount: trendingMovies.length,
-              itemBuilder: (context, index) {
-                final movie = trendingMovies[index];
-                return Text(movie.movie.title);
-              },
-            );
-          },
-        ),
+    return MaterialApp.router(
+      routerConfig: GoRouter(
+        routes: <GoRoute>[
+          GoRoute(
+            path: '/',
+            builder: (BuildContext context, GoRouterState state) {
+              return HomePage(traktManager: traktManager);
+            },
+          ),
+          GoRoute(
+            name: 'auth',
+            path: '/auth-required/:code',
+            builder: (BuildContext context, GoRouterState state) {
+              if (kDebugMode) {
+                print(state.params['code']!);
+              }
+              return AuthPage(
+                code: state.params["code"]!,
+                url: state.queryParams["url"]!,
+              );
+            },
+          ),
+          GoRoute(
+            name: 'oauth',
+            path: '/trakt/oauth',
+            builder: (BuildContext context, GoRouterState state) {
+              if (kDebugMode) {
+                print(jsonEncode(state));
+              }
+              return const TraktDeepLinkPage();
+            },
+          ),
+        ],
       ),
+      title: 'Welcome to Flutter',
     );
   }
 }
