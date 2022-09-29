@@ -22,9 +22,6 @@ GoRouter buildRouter(TraktManager traktManager) => GoRouter(
                 name: 'auth',
                 path: 'auth-required/:code',
                 builder: (BuildContext context, GoRouterState state) {
-                  if (kDebugMode) {
-                    print(state.params['code']!);
-                  }
                   return AuthPage(
                     code: state.params["code"]!,
                     url: state.queryParams["url"]!,
@@ -46,9 +43,6 @@ GoRouter buildRouter(TraktManager traktManager) => GoRouter(
                 name: 'completeRegistration',
                 path: 'trakt/complete',
                 builder: (BuildContext context, GoRouterState state) {
-                  if (kDebugMode) {
-                    print(jsonEncode(state));
-                  }
                   return TraktCompleteRegistration(
                       state.extra! as AccessTokenResponse);
                 },

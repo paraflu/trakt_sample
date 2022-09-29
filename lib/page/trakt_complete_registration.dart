@@ -4,11 +4,24 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:trakt_dart/trakt_dart.dart';
 import 'package:go_router/go_router.dart';
 
-class TraktCompleteRegistration extends StatelessWidget {
-  TraktCompleteRegistration(AccessTokenResponse extra, {Key? key})
-      : super(key: key) {
+class TraktCompleteRegistration extends StatefulWidget {
+  final AccessTokenResponse accessTokenResponse;
+  const TraktCompleteRegistration(this.accessTokenResponse, {Key? key})
+      : super(key: key);
+
+  @override
+  State<TraktCompleteRegistration> createState() =>
+      _TraktCompleteRegistrationState();
+}
+
+class _TraktCompleteRegistrationState extends State<TraktCompleteRegistration> {
+  @override
+  void initState() async {
+    super.initState();
     const storage = FlutterSecureStorage();
-    storage.write(key: "accessTokenResponse", value: jsonEncode(extra));
+    await storage.write(
+        key: "accessTokenResponse",
+        value: jsonEncode(widget.accessTokenResponse));
   }
 
   @override

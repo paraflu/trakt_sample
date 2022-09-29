@@ -13,18 +13,23 @@ class OAuthFlow {
     var logger = Logger();
     DeviceCodeResponse deviceResponse =
         await traktManager.authentication.generateDeviceCodes(signup: true);
+    // timestamp di expire
+    var expireTimestamp =
+        DateTime.now().millisecondsSinceEpoch + deviceResponse.expiresIn * 1000;
 
-    while (DateTime.now().millisecondsSinceEpoch < deviceResponse.expiresIn) {
+    // ciclo finchè non scade il token o vengo autorizzato
+    while (DateTime.now().millisecondsSinceEpoch <= expireTimestamp) {
       await Future.delayed(Duration(seconds: deviceResponse.interval));
       try {
         logger.d("try ${DateTime.now()} expires ${deviceResponse.expiresIn}");
         var code = await traktManager.authentication
-            .getAccessToken(deviceResponse.deviceCode);
+            .getDeviceAccessToken(deviceResponse.deviceCode);
         return code;
       } catch (e) {
-        logger.d("failed ${DateTime.now()} expires ${deviceResponse.expiresIn}");
-        return null;
+        logger.d(
+            "$e : failed ${DateTime.now()} expires ${deviceResponse.expiresIn}");
       }
     }
+    throw AuthorizationExpireException(cause: "tempo scaduto");
   }
 }

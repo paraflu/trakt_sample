@@ -6,6 +6,7 @@ import 'package:trakt_dart/trakt_dart.dart';
 import 'package:trakt_sample/service/oauth_flow.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+/// Pagina di autenticazione, indica l'url da aprire e il codice da inserire
 class AuthPage extends StatefulWidget {
   final String code;
   final String url;
