@@ -8,13 +8,11 @@ import 'package:url_launcher/url_launcher_string.dart';
 
 /// Pagina di autenticazione, indica l'url da aprire e il codice da inserire
 class AuthPage extends StatefulWidget {
-  final String code;
-  final String url;
+  final DeviceCodeResponse deviceCodeResponse;
   final TraktManager traktManager;
 
   const AuthPage({
-    required this.code,
-    required this.url,
+    required this.deviceCodeResponse,
     required this.traktManager,
     Key? key,
   }) : super(key: key);
@@ -37,7 +35,7 @@ class _AuthPageState extends State<AuthPage> {
 
     // mi metto in ascolto dell'evento di completamento autorizzazione
     service
-        .auth()
+        .auth(widget.deviceCodeResponse)
         .then((value) => context.goNamed("completeRegistration", extra: value))
         .catchError((err) {
       logger.e("Errore durante l'autenticazione $err");
@@ -64,16 +62,17 @@ class _AuthPageState extends State<AuthPage> {
               ),
               const Text("Codice: "),
               SelectableText(
-                widget.code,
+                widget.deviceCodeResponse.userCode,
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               RichText(
                 text: TextSpan(
                     style: Theme.of(context).textTheme.bodyText1,
-                    text: widget.url,
+                    text: widget.deviceCodeResponse.verificationUrl,
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () async => await launchUrlString(widget.url)),
+                      ..onTap = () async => await launchUrlString(
+                          widget.deviceCodeResponse.verificationUrl)),
               ),
               ...(hasError ? [showError(exception)] : [])
             ],

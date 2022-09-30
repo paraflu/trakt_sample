@@ -23,8 +23,7 @@ GoRouter buildRouter(TraktManager traktManager) => GoRouter(
                 path: 'auth-required/:code',
                 builder: (BuildContext context, GoRouterState state) {
                   return AuthPage(
-                    code: state.params["code"]!,
-                    url: state.queryParams["url"]!,
+                    deviceCodeResponse: state.extra as DeviceCodeResponse,
                     traktManager: traktManager,
                   );
                 },

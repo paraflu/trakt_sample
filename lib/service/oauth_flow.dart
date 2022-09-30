@@ -9,25 +9,25 @@ class OAuthFlow {
 
   OAuthFlow(this.traktManager);
 
-  Future<AccessTokenResponse?> auth() async {
+  Future<AccessTokenResponse?> auth(
+      DeviceCodeResponse deviceCodeResponse) async {
     var logger = Logger();
-    DeviceCodeResponse deviceResponse =
-        await traktManager.authentication.generateDeviceCodes(signup: true);
     // timestamp di expire
-    var expireTimestamp =
-        DateTime.now().millisecondsSinceEpoch + deviceResponse.expiresIn * 1000;
+    var expireTimestamp = DateTime.now().millisecondsSinceEpoch +
+        deviceCodeResponse.expiresIn * 1000;
 
     // ciclo finchè non scade il token o vengo autorizzato
     while (DateTime.now().millisecondsSinceEpoch <= expireTimestamp) {
-      await Future.delayed(Duration(seconds: deviceResponse.interval));
+      await Future.delayed(Duration(seconds: deviceCodeResponse.interval));
       try {
-        logger.d("try ${DateTime.now()} expires ${deviceResponse.expiresIn}");
+        logger
+            .d("try ${DateTime.now()} expires ${deviceCodeResponse.expiresIn}");
         var code = await traktManager.authentication
-            .getDeviceAccessToken(deviceResponse.deviceCode);
+            .getDeviceAccessToken(deviceCodeResponse.deviceCode);
         return code;
       } catch (e) {
         logger.d(
-            "$e : failed ${DateTime.now()} expires ${deviceResponse.expiresIn}");
+            "$e : failed ${DateTime.now()} expires ${deviceCodeResponse.expiresIn}");
       }
     }
     throw AuthorizationExpireException(cause: "tempo scaduto");

@@ -31,9 +31,7 @@ class HomePage extends StatelessWidget {
                     traktManager.authentication
                         .generateDeviceCodes()
                         .then((resp) {
-                      context.goNamed("auth",
-                          params: {"code": resp.userCode},
-                          queryParams: {"url": resp.verificationUrl});
+                      context.goNamed("auth", extra: resp);
                     });
                   },
                   child: const Text("Autorizza")),
