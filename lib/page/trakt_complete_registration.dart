@@ -1,8 +1,9 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:trakt_dart/trakt_dart.dart';
 import 'package:go_router/go_router.dart';
+import 'package:trakt_sample/service/storage.dart';
 
 class TraktCompleteRegistration extends StatefulWidget {
   final AccessTokenResponse accessTokenResponse;
@@ -16,12 +17,10 @@ class TraktCompleteRegistration extends StatefulWidget {
 
 class _TraktCompleteRegistrationState extends State<TraktCompleteRegistration> {
   @override
-  void initState() async {
+  void initState() {
     super.initState();
-    const storage = FlutterSecureStorage();
-    await storage.write(
-        key: "accessTokenResponse",
-        value: jsonEncode(widget.accessTokenResponse));
+
+    Storage().save(widget.accessTokenResponse);
   }
 
   @override
@@ -33,9 +32,10 @@ class _TraktCompleteRegistrationState extends State<TraktCompleteRegistration> {
         appBar: AppBar(
           title: const Text('Trending Movies'),
         ),
-        body: const Center(
-            child: Text(
-          "Autenticazione completata, adesso puoi sincronizzare lo stato della serie tv con l'applicazione!",
-        )));
+        body: Column(children: [
+          Text(
+            "Autenticazione completata, adesso puoi sincronizzare lo stato della serie tv con l'applicazione!",
+          )
+        ]));
   }
 }
